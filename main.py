@@ -29,11 +29,11 @@ if rank == 0:
     lines = file.readlines()
   line_count = len(lines)
 
-  print(f'Number of lines: {line_count}')
+  # print(f'Number of lines: {line_count}')
   lines_per_worker = line_count // (num_ranks - 1)
   if line_count % (num_ranks - 1):
       lines_per_worker += 1
-  print(f"number of the lines per worker is {lines_per_worker}")   
+  # print(f"number of the lines per worker is {lines_per_worker}")   
 
   for worker_rank in range(1, num_ranks):  # 1, 2, ..., num_rank-1
     list_of_lines = []
@@ -44,7 +44,19 @@ if rank == 0:
     comm.send(list_of_lines, dest = worker_rank)
 
   frequency = comm.recv(source = num_ranks - 1)
-  print(f"In the master, frequency is: \n\n{frequency}\n\n")
+  # print(f"In the master, frequency is: \n\n{frequency}\n\n")
+  total_frequency = 0
+  for value in frequency.values():
+    total_frequency += value
+
+  with open(args.test_file, 'r') as test_file: 
+    test_lines = test_file.readlines()
+    for bigram in test_lines:
+      unigram = bigram.split()[0]
+      bigram = unigram + " " + bigram.split()[1].split("\\")[0]
+      bigram_frequency = frequency[bigram] / total_frequency
+      unigram_frequency = frequency[unigram] / total_frequency
+      print(f"Frequency of the bigram {bigram} is: {bigram_frequency / unigram_frequency}")
 
 else:
   if args.merge_method == "MASTER":
