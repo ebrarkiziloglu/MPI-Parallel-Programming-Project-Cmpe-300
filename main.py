@@ -42,12 +42,17 @@ if rank == 0:
         list_of_lines.append(lines[j])
     dict_of_worker_params[worker_rank] = list_of_lines
     comm.send(list_of_lines, dest = worker_rank)
-
-  frequency = comm.recv(source = num_ranks - 1)
-  # print(f"In the master, frequency is: \n\n{frequency}\n\n")
+  
+  frequency = {}
   total_frequency = 0
-  for value in frequency.values():
-    total_frequency += value
+  if args.merge_method == "MASTER":
+    # Requirement 2
+    pass
+  elif args.merge_method == "WORKERS":
+    frequency = comm.recv(source = num_ranks - 1)
+    # print(f"In the master, frequency is: \n\n{frequency}\n\n")
+    for value in frequency.values():
+      total_frequency += value
 
   with open(args.test_file, 'r') as test_file: 
     test_lines = test_file.readlines()
