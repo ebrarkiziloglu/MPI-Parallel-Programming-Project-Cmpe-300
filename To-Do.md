@@ -3,6 +3,7 @@
 * ~~Read the program arguments: there are 3 of them~~
 * ~~Read the input file~~
 * ~~Count the number of lines in the file~~
+* check the distribution of lines again
 * ~~Divide the input lines equally to the workers (an example is given in parallel_loop.py)~~
 * Each worker will print its rank and number of lines it received
 * Each worker will read its lines and will count the number of unigrams and bigrams
