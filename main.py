@@ -1,7 +1,7 @@
 import argparse
 from mpi4py import MPI
 
-# mpiexec -n 2 --oversubscribe python3 main.py --input_file data/sample_text.txt --merge_method WORKERS --test_file data/test.txt
+# mpiexec -n 5 --oversubscribe python3 main.py --input_file data/sample_text.txt --merge_method WORKERS --test_file data/test.txt
 # mpiexec -n 2 --oversubscribe python3 main.py --input_file data/sample_text.txt --merge_method MASTER --test_file data/test.txt
 # mpiexec -n 4 python3 combined_project.py --input_file ./sample_text.txt --merge_method WORKERS --test_file ./test.txt
 
@@ -32,8 +32,8 @@ if rank == 0:                # MASTER process
     with open(args.input_file, 'r') as file:
         lines = file.readlines()
     line_count = len(lines)
-    divison = line_count // (num_ranks - 1)
-    lines_per_worker = [divison for i in range(num_ranks - 1)]
+    division = line_count // (num_ranks - 1)
+    lines_per_worker = [division for i in range(num_ranks - 1)]
     remainder = line_count % (num_ranks - 1)
     for i in range(remainder):
         lines_per_worker[i] = lines_per_worker[i] + 1
