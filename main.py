@@ -82,12 +82,16 @@ else:
                 worker_frequency[combination] = worker_frequency[combination] + 1
             else:
                 worker_frequency[combination] = 1
+        word = words[word_count - 1]
+        if word in worker_frequency:
+            worker_frequency[word] = worker_frequency[word] + 1
+        else:
+            worker_frequency[word] = 1      
 
     # Send the data appropriately, according to the --merge_method argument:
     if args.merge_method == "MASTER":
         # Requirement 2
         comm.send(worker_frequency, dest=0)
-        
     elif args.merge_method == "WORKERS":
         # Requirement 3
         if rank > 1:
