@@ -131,4 +131,3 @@ else:
             comm.send(frequency, dest=rank + 1)
         if rank == num_ranks - 1:
             comm.send(frequency, dest=0)
-        pass
