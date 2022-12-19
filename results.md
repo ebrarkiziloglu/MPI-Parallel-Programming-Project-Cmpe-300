@@ -44,7 +44,7 @@ Frequency of the bigram boğaziçi üniversitesi is: 0.37272727272727274
 Frequency of the bigram bilkent üniversitesi is: 0.2222222222222222
 ```
 
-#### 4 procecceros with MASTER:
+#### 5 procecceros with MASTER:
 ```sh
 The worker with rank 1 received 59109 sentences.
 The worker with rank 2 received 59109 sentences.
