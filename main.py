@@ -1,8 +1,9 @@
 import argparse
 from mpi4py import MPI
 
-# mpiexec -n 5 --oversubscribe python3 main.py --input_file data/sample_text.txt --merge_method WORKERS --test_file data/test.txt
-#mpiexec -n 4 python3 combined_project.py --input_file ./sample_text.txt --merge_method WORKERS --test_file ./test.txt
+# mpiexec -n 7 --oversubscribe python3 main.py --input_file data/sample_text.txt --merge_method WORKERS --test_file data/test.txt
+# mpiexec -n 7 --oversubscribe python3 main.py --input_file data/sample_text.txt --merge_method MASTER --test_file data/test.txt
+# mpiexec -n 4 python3 combined_project.py --input_file ./sample_text.txt --merge_method WORKERS --test_file ./test.txt
 
 # Add command line arguments:
 parser = argparse.ArgumentParser()
@@ -40,7 +41,6 @@ if rank == 0:
     remainder = line_count % (num_ranks - 1)
     for i in range(remainder):
         lines_per_worker[i] = lines_per_worker[i] + 1
-    print(f"number of the lines per worker is {lines_per_worker}")
 
     index = 0
     for worker_rank in range(1, num_ranks):  # 1, 2, ..., num_rank-1
@@ -56,28 +56,28 @@ if rank == 0:
         for i in range(1, num_ranks):
             unigram = comm.recv(source=i, tag=1)
             frequency = merge_dict(frequency, unigram)
-        #print(f"In the master, frequency is: \n\n{frequency}\n\n")
 
     elif args.merge_method == "WORKERS":
         frequency = comm.recv(source=num_ranks - 1)
-        #print(f"In the worker, frequency is: \n\n{frequency}\n\n")
 
     with open(args.test_file, 'r') as test_file:
         test_lines = test_file.readlines()
         for bigram in test_lines:
             unigram = bigram.split()[0]
             bigram = unigram + " " + bigram.split()[1].split("\\")[0]
-            bigram_frequency = frequency[bigram]    # / total_frequency
-            unigram_frequency = frequency[unigram]  # / total_frequency
+            bigram_frequency = frequency[bigram]    
+            unigram_frequency = frequency[unigram]  
             print(f"Frequency of the bigram {bigram} is: {bigram_frequency / unigram_frequency}")
 
 else:
+    data = comm.recv(source=0)
+    number_of_lines = len(data)
+    print(f"The worker with rank {rank} received {number_of_lines} sentences.")
     if args.merge_method == "MASTER":
         # Requirement 2
-        received_data = comm.recv(source=0)
         unigrams = {}
         bigrams = {}
-        for sentence in received_data:
+        for sentence in data:
             words = sentence.split()
             for i in range(len(words)-1):
                 if words[i] in unigrams:
@@ -102,12 +102,11 @@ else:
         pass
     elif args.merge_method == "WORKERS":
         # Requirement 3
-        lines_to_parse = comm.recv(source=0)
         frequency = {}
         if rank > 1:
             prev_frequency = comm.recv(source=rank - 1)
             frequency.update(prev_frequency)
-        for sentence in lines_to_parse:
+        for sentence in data:
             my_words = sentence.split()
             word_count = len(my_words)
             for i in range(word_count - 1):
