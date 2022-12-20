@@ -1,3 +1,8 @@
+# Student Name: Asude Ebrar Kiziloglu
+# Student Number: 2019400009
+# Compile Status: Compiling
+# Program Status: Working 
+
 import argparse
 from mpi4py import MPI
 
@@ -23,6 +28,7 @@ def merge_dict(main_dict, new_dict):
 
 # MASTER process:
 if rank == 0:  
+    
     # Read the input file, divide the sentences into WORKERS and send the data:
     with open(args.input_file, 'r') as file:
         lines = file.readlines()
@@ -63,6 +69,7 @@ if rank == 0:
 
 # Worker processes:
 else:
+
     # Receive the data from the MASTER and calculate the frequencies:
     data = comm.recv(source=0)
     print(f"The worker with rank {rank} received {len(data)} sentences.")
@@ -92,6 +99,7 @@ else:
     if args.merge_method == "MASTER":
         # Requirement 2
         comm.send(worker_frequency, dest=0)
+
     elif args.merge_method == "WORKERS":
         # Requirement 3
         if rank > 1:
